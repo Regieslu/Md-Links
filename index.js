@@ -1,13 +1,5 @@
-// module.exports = () => {
-//   // ...
-// };
-// import express from 'express';
-// const app = express();
-
-// app.get("/", (res) => {
-//   res.send("<h1>Hola Mundo</h1>");
-// });
-
-// app.listen(3000, () => {
-//   console.log("Listening on port 3000...");
-// });
+// const { validatePath, validateExtension} = require ('./lib/validatePath.jcs')
+// const {readDirectory, isDirectory} = require('./lib/directory.cjs')
+// const {validateFileExists} = require ('./lib/file.jcs')
+// const { isUrlValid } = require('./lib/app.cjs')
+// // const {makingGetCall, isUrlValid} = require ('./lib/app.cjs')
