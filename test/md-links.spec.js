@@ -1,13 +1,13 @@
 const path = require('path');
-const { getAbsolutePath, fileExists, getLinksFromFile } = require('../lib/file')
-const { makingGetCall } = require('../lib/app')
+const { getAbsolutePath, fileExists, getLinksFromFile, isMarkdown } = require('../lib/file')
+const { makingGetCall, isUrlValid } = require('../lib/app')
 const fs = require('fs')
 // Importa la función que deseas probar (getAbsolutePath)
 describe("getAbsolutePath", () => {
     it("Debería retornar la ruta absoluta si la entrada es relativa", () => {
-        const relativePath = 'example/README.md';
-        const absolutePath = path.resolve(relativePath);
-        expect(getAbsolutePath(relativePath)).toBe(absolutePath);
+        const relativePath = 'example/README.md'
+        const absolutePath = path.resolve(relativePath)
+        expect(getAbsolutePath(relativePath)).toBe(absolutePath)
     });
 
     it("Debería retornar la misma ruta si la entrada ya es absoluta", () => {
@@ -29,7 +29,7 @@ describe("fileExists", () => {
     });
 
     it("Debería rechazar con un error si el archivo no existe", async () => {
-        const nonExistingFilePath = 'ruta/inexistente/al/archivo.txt';
+        const nonExistingFilePath = 'ruta/inexistente/al/archivo.txt'
         try {
             await fileExists(nonExistingFilePath);
             // Si la promesa se resuelve inesperadamente, falla la prueba
@@ -37,7 +37,7 @@ describe("fileExists", () => {
         } catch (error) {
             // Verifica si el error es del tipo correcto y contiene el mensaje esperado
             expect(error instanceof Error).toBe(true);
-            expect(error.message).toBe('The path does not exist');
+            expect(error.message).toBe('The path does not exist')
         }
     });
 });
@@ -61,18 +61,44 @@ describe("getLinksFromFile", () => {
 
 
 describe("makingGetCall", () => {
-    it("Debería resolver con un objeto con 'url', 'status' y 'ok' si la solicitud GET es exitosa", async () => {
-        const url = 'https://es.wikipedia.org/wiki/Markdown'; // URL de ejemplo para una solicitud exitosa
-        const result = await makingGetCall(url);
-        expect(result).toEqual(expect.objectContaining({ href: url, statusCode: expect.any(Number), status: 'ok' }));
+    it("Debería resolver con un objeto con 'text, 'href', 'statusCode', 'fail 'ok' si la solicitud GET es exitosa y 'file' ", async () => {
+        const item =  { text: 'Markdown', href: 'https://es.wikipedia.org/wiki/Markdown' } // URL de ejemplo para una solicitud exitosa
+        const result = await makingGetCall(item, "/Users/Regina/Documents/MdLinks/DEV010-md-links/README.md");
+        const expectedObject = { text: item.text, href: item.href, statusCode: expect.any(Number), status: 'ok', file: "/Users/Regina/Documents/MdLinks/DEV010-md-links/README.md" }
+        expect(result).toEqual(expect.objectContaining(expectedObject))
     });
 
-    it("Debería rechazar con un objeto con 'url', 'status' y 'ok' si la solicitud GET falla", async () => {
-        const nonExistingUrl = 'https://nodejs.org/es/about/'; // URL de ejemplo que provocará una solicitud fallida
+    it("Debería rechazar con un objeto con 'text, 'href', 'statusCode', 'fail 'ok' y 'file' si la solicitud GET falla", async () => {
+        const item =  { text: 'NodeJs', href: 'https://nodejs.org/es/about/' }  // URL de ejemplo que provocará una solicitud fallida
+        const expectedObject ={ text: item.text, href: item.href , statusCode: 404, status: 'fail', file: "/Users/Regina/Documents/MdLinks/DEV010-md-links/README.js" }
         try {
-            await makingGetCall(nonExistingUrl);
+            await makingGetCall(expectedObject, '/Users/Regina/Documents/MdLinks/DEV010-md-links/README.js' );
         } catch (error) {
-            expect(error).toEqual(expect.objectContaining({ href: nonExistingUrl, statusCode: 404, status: 'fail' }));
+            expect(error).toEqual(expect.objectContaining(expectedObject));
         }
-    });
-});
+    })
+})
+
+describe('isUrlValid', () => {
+    it('Debería deolver una url válida', () => {
+        const urlCorrecta = 'https://es.wikipedia.org/wiki/Markdown'
+        expect(isUrlValid(urlCorrecta)).toBe(true)
+    })
+    it('Debería deolver una url válida', () => {
+        const urlIncorrecta = 'htps://es.ikipedia.org/wiki/'
+        expect(isUrlValid(urlIncorrecta)).toBe(false)
+    })
+})
+
+describe('isMarkdown', () => {
+    it ('Debería devolver un archivo markdown', () => {
+        const isFileMd = 'README.md'
+        expect(isMarkdown(isFileMd)).toBe(true)
+    })
+    it ('Debería devolver false si no es un archivo markdown', () => {
+        const isNotMd = 'REAMDE.ts'
+        expect(isMarkdown(isNotMd)).toBe(false)
+    })
+})
+
+        
