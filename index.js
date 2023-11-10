@@ -13,9 +13,9 @@ const mdLinks = (pathValidate) => {
                             if(isUrlValid(item.href)) {
                                 makingGetCall(item, absolutePath) //aqui pasamos item como todo el object.
                                 .then((response) => {
-                                    console.log(response)
+                                    console.table(response)
                                 })
-                                .catch((e) => console.log(e))
+                                .catch((e) => console.table(e))
                             }
                         });
 
@@ -30,7 +30,7 @@ const mdLinks = (pathValidate) => {
             }
         })
 }
-// Ejemplo de uso:
+// Ejemplo de uso con README de laboratoria:
 mdLinks('./README.md')
 
 module.exports = mdLinks
